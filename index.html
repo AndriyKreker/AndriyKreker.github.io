@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Socket Console</title>
+  <style>
+    body { background:#111; color:#0f0; font-family: monospace; }
+    #console { height:300px; overflow:auto; background:black; padding:10px; }
+    input, button { margin:5px; padding:8px; }
+  </style>
+</head>
+<body>
+
+<div id="console"></div>
+
+<input id="ip" placeholder="ws://127.0.0.1:3000">
+<button onclick="connect()">Connect</button>
+
+<br>
+
+<input id="msg" placeholder="message">
+<button onclick="send()">Send</button>
+
+<script>
+let ws;
+let username = prompt("Имя:");
+
+const c = document.getElementById("console");
+
+function log(t) {
+  c.innerText += t + "\n";
+  c.scrollTop = c.scrollHeight;
+}
+
+function connect() {
+  const url = document.getElementById("ip").value;
+
+  ws = new WebSocket(url);
+
+  ws.onopen = () => {
+    log("connected");
+
+    // отправляем имя СРАЗУ как plain text
+    ws.send(username);
+  };
+
+  ws.onmessage = (e) => {
+    log("server: " + e.data);
+  };
+
+  ws.onclose = () => log("disconnected");
+}
+
+function send() {
+  const msg = document.getElementById("msg").value;
+  log("you: " + msg);
+  ws.send(msg);
+}
+</script>
+
+</body>
+</html>
